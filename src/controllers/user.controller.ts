@@ -337,6 +337,7 @@ export class UserController {
         lastLogin: user.lastLogin,
         logEntries: user.logEntries ? user.logEntries : [],
         activeSessions: user.activeSessions || [], // Include full active sessions, not just IDs
+        lastPasswordChange: user.lastPasswordChange,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         _id: user._id.toString(),
@@ -431,6 +432,7 @@ interface ReturnUser {
     createdAt: Date;
     updatedAt: Date;
     _id: string | ObjectId;
+    lastPasswordChange: Date;
 }
 
 
