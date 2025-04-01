@@ -48,6 +48,10 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  lastPasswordChange: {
+    type: Date,
+    default: Date.now,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -75,6 +79,7 @@ interface User extends Document {
   lastLogin: Date;
   logEntries: mongoose.Types.ObjectId[];
   activeSessions: mongoose.Types.ObjectId[];
+  lastPasswordChange: Date;
 }
 
 export default User;

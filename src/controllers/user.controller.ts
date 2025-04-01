@@ -7,7 +7,7 @@ import { generateLog } from "../utils/generateLog";
 import type { ObjectId } from "mongoose";
 import { generateActiveSession, getActiveSessions, updateActiveSession, deleteActiveSession } from "../utils/activeSession";
 import type { ActiveSessionType } from "../models/activeSession.model";
-
+import bcrypt from "bcrypt";
 
 // Helper function for security checks
 export class UserController {
@@ -169,10 +169,10 @@ export class UserController {
         session.device === deviceInfo.device && 
         session.browser === deviceInfo.browser
       );
-      
+      let currentSession = existingSession;
       // If no matching session, create a new one
       if (!existingSession) {
-        await generateActiveSession(
+        currentSession = await generateActiveSession(
           user.id.toString(),
           deviceInfo.browser,
           deviceInfo.device,
@@ -190,8 +190,7 @@ export class UserController {
           deviceInfo.location
         );
       }
-
-      return successResponse(res, 'Login successful', 200, { user, accessToken });
+      return successResponse(res, 'Login successful', 200, { user, accessToken, sessionId: currentSession?.sessionId });
     } catch (error) {
       return errorResponse(res, `Login failed: ${error}`, 401);
     }
@@ -385,6 +384,37 @@ export class UserController {
       return errorResponse(res, `Error deleting session: ${error}`, 500);
     }
   }
+
+  async changePassword(req: RequestWithUser, res: Response) {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      
+      if (!oldPassword || !newPassword) {
+        return errorResponse(res, "All fields are required", 400);
+      }
+
+      const user = await getUserById(req.user.userId);
+      if (!user) {
+        return errorResponse(res, "User not found", 404);
+      }
+
+      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      if (!isPasswordValid) {
+        return errorResponse(res, "Invalid old password", 401);
+      }
+      
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      user.lastPasswordChange = new Date();
+      await user.save();
+      await generateLog(user._id.toString(), "website", "User changed their password", "observation", "resolved");
+      return successResponse(res, "Password changed successfully", 200);
+    } catch (error) {
+      return errorResponse(res, `Error changing password: ${error}`, 500);
+    }
+  }
+
+
 }
 
 
