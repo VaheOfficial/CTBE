@@ -108,7 +108,6 @@ export class UserController {
       // Enhanced security logging - directly log the user agent and IP for debugging
       const userAgent = req.headers['user-agent'] || 'Unknown';
       const ipAddress = req.body.ipAddress || req.ip || 'Unknown';
-      console.log(`Login detected - UserAgent: ${userAgent}, IP: ${ipAddress}`);
       
       // Force-check for suspicious patterns regardless of middleware flags
       const securityFlags: string[] = [];
@@ -184,7 +183,7 @@ export class UserController {
       }
       return successResponse(res, 'Login successful', 200, { user, accessToken, sessionId: currentSession?.sessionId });
     } catch (error) {
-      return errorResponse(res, `Login failed: ${error}`, 401);
+      return errorResponse(res, `${error}`, 401);
     }
   }
 
@@ -249,6 +248,7 @@ export class UserController {
             lastLogin: user.lastLogin,
             lastPasswordChange: user.lastPasswordChange,
         }));
+        await generateLog(req.user?.userId, "website", "Admin retrieved all users", "observation", "resolved");
         return successResponse(res, "Users retrieved successfully", 200, response);
     } catch (error) {
       return errorResponse(res, `Error retrieving users ${error}`);
@@ -268,6 +268,67 @@ export class UserController {
       return successResponse(res, "User retrieved successfully", 200, user);
     } catch (error) {
       return errorResponse(res, `Error retrieving user ${error}`);
+    }
+  }
+
+  async updateUserAsAdmin(req: RequestWithUser, res: Response) {
+    try {
+      const adminId = req.user?.userId;
+      if(!adminId) {
+        return errorResponse(res, "Unauthorized", 401);
+      }
+      if(req.user?.role !== "admin") {
+        return errorResponse(res, "Unauthorized", 401);
+      }
+      const userId = req.params.id;
+      const {name, email, role, accountStatus} = req.body;
+      if (!userId) {
+        return errorResponse(res, "User ID is required");
+      }
+      const oldUser = await getUserById(userId);
+      const user = await updateUser(userId, {name, email, role, accountStatus});
+      if(oldUser?.name !== user?.name) {
+        const global = await Global.find({ associatedUser: userId });
+        for(const g of global) {
+          if(g.reason.includes(oldUser?.name ?? "")) {
+            await Global.findByIdAndUpdate(g._id, { reason: g.reason.replace(oldUser?.name ?? "", user?.name ?? "") });
+          }
+        }
+      }
+      await generateLog(adminId, "website", `User ${userId} updated by admin ${adminId}`, "observation", "resolved");
+      await generateLog(userId, "website", `User ${userId} updated by admin ${adminId}`, "observation", "resolved");
+      if (!user) {
+        return errorResponse(res, "User not found");
+      }
+      return successResponse(res, "User updated successfully", 200, user);
+    } catch (error) {
+      return errorResponse(res, `Error updating user ${error}`);
+    }
+  }
+
+  async resetPasswordAsAdmin(req: RequestWithUser, res: Response) {
+    try {
+      const adminId = req.user?.userId;
+      if(!adminId) {
+        return errorResponse(res, "Unauthorized", 401);
+      }
+      const userId = req.params.id;
+      if (!userId) {
+        return errorResponse(res, "User ID is required");
+      }
+      const user = await getUserById(userId);
+      if (!user) {
+        return errorResponse(res, "User not found");
+      }
+      const newPassword = req.body.newPassword;
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+      await generateLog(adminId, "website", `User ${userId} password reset by admin ${adminId}`, "observation", "resolved");
+      await generateLog(userId, "website", `User ${userId} password reset by admin ${adminId}`, "observation", "resolved");
+      return successResponse(res, "Password reset successfully", 200, { newPassword });
+    } catch (error) {
+      return errorResponse(res, `Error resetting password ${error}`);
     }
   }
 

@@ -21,7 +21,7 @@ export const getUserById = async (id: string) => {
   return user;
 };
 
-export const updateUser = async (id: string, userData: UserDocument) => {
+export const updateUser = async (id: string, userData: Partial<UserDocument>) => {
   const user = await User.findByIdAndUpdate(id, userData, { new: true });
   return user;
 };
