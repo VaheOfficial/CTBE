@@ -242,10 +242,22 @@ export class UserController {
     }
   }
 
-  async getUsers(req: Request, res: Response) {
+  async getUsers(req: RequestWithUser, res: Response) {
     try {
-      const users = await getUsers();
-      return successResponse(res, "Users retrieved successfully", 200, users);
+        if(req.user?.role !== "admin") {
+            return errorResponse(res, "Unauthorized", 401);
+        }
+        const users = await getUsers();
+        const response = users.map((user) => ({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            accountStatus: user.accountStatus,
+            lastLogin: user.lastLogin,
+            lastPasswordChange: user.lastPasswordChange,
+        }));
+        return successResponse(res, "Users retrieved successfully", 200, response);
     } catch (error) {
       return errorResponse(res, `Error retrieving users ${error}`);
     }
