@@ -5,8 +5,6 @@ import { authenticate } from "../middleware/auth.middleware";
 const router = Router();
 const userController = new UserController();
 
-// Public routes
-router.post('/', userController.createUser);
 
 // Protected routes
 router.get('/me', authenticate, userController.getUserProfile);

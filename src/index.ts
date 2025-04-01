@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import http from "node:http";
 import { WebSocketServer } from "ws";
 import { streamAudioFileToClient } from "./services/audioStreaming.service";
+import { globalCleanUp } from "./services/global.service";
 
 // Middleware imports
 import { detectDeviceInfo } from "./middleware/deviceInfo.middleware";
@@ -14,6 +15,7 @@ import { detectDeviceInfo } from "./middleware/deviceInfo.middleware";
 import testRoutes from "./routes/test.routes";
 import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
+import globalRoutes from "./routes/global.route";
 
 // Connect to the database.
 connectDB();
@@ -25,6 +27,9 @@ const wss = new WebSocketServer({ server: wsServerHttp });
 
 // Start streaming the audio file to every WebSocket client.
 streamAudioFileToClient(wss);
+
+// Run globalCleanUp every minute (60000 milliseconds)
+setInterval(globalCleanUp, 60000);
 
 // Start the WebSocket server.
 wsServerHttp.listen(WS_PORT, () => {
@@ -53,6 +58,7 @@ app.use(detectDeviceInfo);
 app.use("/test", testRoutes);
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/global", globalRoutes);
 
 // Catch-all route.
 app.use((req, res) => {

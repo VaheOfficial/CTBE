@@ -1,6 +1,6 @@
 import type { Request, RequestWithUser, Response } from "express";
 import { successResponse, errorResponse } from "../utils/response";
-import { createUser, getUsers, getUserById, updateUser, deactivateUser, activateUser, getUserWithInfo } from "../services/user.services";
+import { getUsers, getUserById, updateUser, deactivateUser, activateUser, getUserWithInfo } from "../services/user.services";
 import { loginUser, refreshAccessToken, logoutUser, registerUser } from "../services/auth.services";
 import type { LogType } from "../models/log.model";
 import { generateLog } from "../utils/generateLog";
@@ -8,18 +8,10 @@ import type { ObjectId } from "mongoose";
 import { generateActiveSession, getActiveSessions, updateActiveSession, deleteActiveSession } from "../utils/activeSession";
 import type { ActiveSessionType } from "../models/activeSession.model";
 import bcrypt from "bcrypt";
+import Global from "../models/global.model";
 
 // Helper function for security checks
 export class UserController {
-  async createUser(req: Request, res: Response) {
-    try {
-      const user = await createUser(req.body);
-      return successResponse(res, "User created successfully", 201, user);
-    } catch (error) {
-      return errorResponse(res, `Error creating user ${error}`);
-    }
-  }
-
   async registerUser(req: Request, res: Response) {
     try {
       const { user, accessToken, refreshToken } = await registerUser(req.body);
@@ -285,9 +277,16 @@ export class UserController {
       if (!userId) {
         return errorResponse(res, "User ID is required");
       }
+      const oldUser = await getUserById(userId);
       const user = await updateUser(userId, req.body);
       if (!user) {
         return errorResponse(res, "User not found");
+      }
+      const global = await Global.find({ associatedUser: userId });
+      for(const g of global) {
+        if(g.reason.includes(oldUser?.name ?? "")) {
+          await Global.findByIdAndUpdate(g._id, { reason: g.reason.replace(oldUser?.name ?? "", user?.name ?? "") });
+        }
       }
       return successResponse(res, "User updated successfully", 200, user);
     } catch (error) {

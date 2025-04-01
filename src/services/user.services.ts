@@ -43,10 +43,9 @@ export const getUserWithInfo = async (id: string) => {
   
   // Fetch logs if they exist
   let logEntries = [];
-  if(user.logEntries && user.logEntries.length > 0) {
-    const logs = await logController.getLogsByUser(user.id);
-    logEntries = logs.map((log: LogType) => log.toObject());
-  }
+  const logs = await logController.getLogsByUser(user.id);
+  logEntries = logs.map((log: LogType) => log.toObject());
+  
   
   // Fetch active sessions
   const activeSessions = await getActiveSessions(user.id);
