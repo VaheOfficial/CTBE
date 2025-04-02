@@ -32,7 +32,6 @@ export const detectDeviceInfo = (req: Request, res: Response, next: NextFunction
     const userAgent = req.headers['user-agent'] || 'Unknown';
     const securityFlags: string[] = [];
     
-    console.log(`[deviceInfo] Processing request with User-Agent: ${userAgent}`);
     
     // Extract browser information
     let browser = 'Unknown';
@@ -53,7 +52,6 @@ export const detectDeviceInfo = (req: Request, res: Response, next: NextFunction
     } else if (browser === 'Unknown' && userAgent !== 'Unknown') {
       // Potentially suspicious if browser can't be identified but has a user agent
       securityFlags.push('unknown_browser');
-      console.log(`[deviceInfo] Unknown browser detected with agent: ${userAgent}`);
     }
     
     // Extract device information
@@ -85,7 +83,6 @@ export const detectDeviceInfo = (req: Request, res: Response, next: NextFunction
         
         // Special handling for localhost/development IPs
         if (ipAddress === '::1' || ipAddress === '127.0.0.1') {
-          console.log('[deviceInfo] Detected localhost connection');
           // Don't flag localhost connections as suspicious
           if (browser !== 'Postman' && browser !== 'curl') {
             browser = browser === 'Unknown' ? 'Development Browser' : browser;
@@ -114,7 +111,6 @@ export const detectDeviceInfo = (req: Request, res: Response, next: NextFunction
     req.body.ipAddress = req.body.ipAddress || ipAddress;
     req.body.location = req.body.location || location;
     
-    console.log(`[deviceInfo] Identified: Browser=${browser}, Device=${device}, IP=${ipAddress}, Location=${location}`);
     
     // Security monitoring - Skip most checks for localhost in development
     const isLocalhost = ipAddress === '::1' || ipAddress === '127.0.0.1';
@@ -174,7 +170,6 @@ export const detectDeviceInfo = (req: Request, res: Response, next: NextFunction
     req.body.securityFlags = securityFlags;
     
     if (securityFlags.length > 0) {
-      console.log(`[deviceInfo] Security flags detected: ${securityFlags.join(', ')} from ${ipAddress}`);
       logger.warn(`Security flags detected: ${securityFlags.join(', ')} from ${ipAddress}`);
     }
     

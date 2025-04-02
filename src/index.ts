@@ -7,6 +7,7 @@ import http from "node:http";
 import { WebSocketServer } from "ws";
 import { streamAudioFileToClient } from "./services/audioStreaming.service";
 import { globalCleanUp } from "./services/global.service";
+import kerberosClient from "./services/kerberos.service";
 
 // Middleware imports
 import { detectDeviceInfo } from "./middleware/deviceInfo.middleware";
@@ -24,6 +25,8 @@ connectDB();
 const WS_PORT = 8080;
 const wsServerHttp = http.createServer();
 const wss = new WebSocketServer({ server: wsServerHttp });
+
+kerberosClient();
 
 // Start streaming the audio file to every WebSocket client.
 streamAudioFileToClient(wss);
