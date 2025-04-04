@@ -1,30 +1,43 @@
-import kerberos from "kerberos";
-import { logger } from "../utils/logger";
+import kerberos from 'kerberos';
+import { logger } from '../utils/logger';
+import { exec } from 'child_process';
 
+process.env.KRB5_KTNAME = '/etc/krb5.keytab';
 const servicePrincipal = process.env.KERBEROS_SERVICE_PRINCIPAL;
-logger.info(`KERBEROS_SERVICE_PRINCIPAL: ${servicePrincipal}`);
 
 async function kerberosClient() {
     if(!servicePrincipal) {
-        throw new Error("KERBEROS_SERVICE_PRINCIPAL is not set");
+        logger.error('KERBEROS_SERVICE_PRINCIPAL is not set');
+        return;
     }
-    const client = kerberos.initializeClient(servicePrincipal, {}, (err, client) => {
-        if(err) {
-            logger.error(err);
-            return;
-        }
-
-        client.step('', (err, response) => {
-            if(err) {
-                logger.error(err);
-                return;
-            }
-            console.log(response);
-        });
-    });
-
-    return client;
+    try {
+        const client = await kerberos.initializeClient(servicePrincipal);
+        logger.info('Kerberos client initialized successfully.');
+    } catch (err) {
+        logger.error(`Failed to initialize Kerberos client: ${err}`);
+    }
 }
 
-export default kerberosClient;
 
+async function kerberosServer() {
+    if(!servicePrincipal) {
+        logger.error('KERBEROS_SERVICE_PRINCIPAL is not set');
+        return;
+    }
+    try {
+        logger.info(`Using keytab file: ${process.env.KRB5_KTNAME}`);
+        exec('klist -k ' + process.env.KRB5_KTNAME, (error, stdout, stderr) => {
+            if (error) {
+                logger.error(`Failed to execute klist command: ${error}`);
+            } else {
+                logger.info(`klist output: ${stdout}`);
+            }
+        });
+        const server = await kerberos.initializeServer(servicePrincipal);
+        logger.info('Kerberos server initialized successfully.');
+    } catch (err) {
+        logger.error(`Failed to initialize Kerberos server: ${err}`);
+    }
+}
+
+export { kerberosClient, kerberosServer };
