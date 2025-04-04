@@ -1,9 +1,10 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type RequestWithUser, type Response } from "express";
 import { getWeatherForecast } from "../services/weather.service";
+import { authenticate } from "../middleware/auth.middleware";
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', authenticate, async (req: RequestWithUser, res: Response) => {
     const weatherForecast = await getWeatherForecast();
     res.json(weatherForecast);
 });
