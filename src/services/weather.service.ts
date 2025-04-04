@@ -4,7 +4,7 @@ import { logger } from "../utils/logger";
 import { CacheController } from "../controllers/cache.controller";
 import User from "../models/user.model";
 import type { RequestWithUser } from "express";
-import type { ReturnUser } from "../controllers/user.controller";
+import type { ObjectId } from "mongoose";
 
 const cacheKey = 'weather-forecast';
 
@@ -230,4 +230,21 @@ export async function updateTemperaturePreference(req: RequestWithUser) {
 
     await user.save();
     return formattedUser;
+}
+
+interface ReturnUser {
+    name: string;
+    email: string;
+    role: string;
+    clearanceLevel: string;
+    temperaturePreference: string;
+    accountStatus: string;
+    lastActive: Date;
+    lastLogin: Date;
+    logEntries: ObjectId[];
+    activeSessions: ObjectId[];
+    createdAt: Date;
+    updatedAt: Date;
+    _id: string | ObjectId;
+    lastPasswordChange: Date;
 }
