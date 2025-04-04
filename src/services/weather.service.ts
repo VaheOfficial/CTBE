@@ -61,6 +61,13 @@ export async function getWeatherForecast() {
 
     const formattedInterpolatedForecast = formatWeatherForecast(interpolatedForecast);
     
+    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
+    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
+    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
+    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
+    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
+    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
+    
     
     // Calculate the end of the next minute for cache expiration
     const now = new Date();
