@@ -58,14 +58,17 @@ export async function getWeatherForecast() {
     
     // Interpolate between the two forecasts
     const interpolatedForecast = interpolateForecasts(currentHourForecast, nextHourForecast, weight);
+
+    const formattedInterpolatedForecast = formatWeatherForecast(interpolatedForecast);
+    
     
     // Calculate the end of the next minute for cache expiration
     const now = new Date();
     const endHour = now.getHours();
     const endMinute = now.getMinutes() + 1; // Next minute
     
-    CacheController.setCacheWithTimeRange(cacheKey, JSON.stringify(interpolatedForecast), endHour, endMinute);
-    return interpolatedForecast;
+    CacheController.setCacheWithTimeRange(cacheKey, JSON.stringify(formattedInterpolatedForecast), endHour, endMinute);
+    return formattedInterpolatedForecast;
 }
 
 /**
@@ -108,4 +111,31 @@ function interpolateForecasts(forecast1: any, forecast2: any, weight: number) {
     }
     
     return result;
+}
+
+function formatWeatherForecast(forecast: any) {
+    const formattedData: weatherForecast = {
+        temperature: forecast.temp_c.toFixed(1),
+        humidity: forecast.humidity,
+        windSpeed: forecast.wind_mph.toFixed(1),
+        windDirection: forecast.wind_dir,
+        pressure: forecast.pressure_mb,
+        condition: forecast.condition.text,
+        updatedAt: forecast.time,
+        altitude: forecast.altitude,
+        windChill: forecast.windchill_c.toFixed(1)
+    }
+    return formattedData;
+}
+
+interface weatherForecast { 
+    temperature: number;
+    humidity: number;
+    windSpeed: number;
+    windDirection: string;
+    pressure: number;
+    condition: string;
+    updatedAt: string;
+    altitude: number;
+    windChill: number;
 }
