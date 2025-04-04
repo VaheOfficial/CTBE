@@ -23,7 +23,10 @@ export class CacheController {
         // Calculate TTL in seconds
         const ttlSeconds = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
         
-        await redisClient.set(key, value, 'EX', ttlSeconds);
+        // Ensure TTL is at least 1 second to avoid Redis error
+        const minTTL = Math.max(ttlSeconds, 1);
+        
+        await redisClient.set(key, value, 'EX', minTTL);
     }
     static async getCache(key: string) {
         return await redisClient.get(key);

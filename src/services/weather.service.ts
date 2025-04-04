@@ -221,7 +221,7 @@ export async function updateTemperaturePreference(req: RequestWithUser) {
         lastActive: user.lastActive,
         lastLogin: user.lastLogin,
         logEntries: user.logEntries ? user.logEntries : [],
-        activeSessions: user.activeSessions || [], // Include full active sessions, not just IDs
+        activeSessions: user.activeSessions || [],
         lastPasswordChange: user.lastPasswordChange,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
@@ -241,8 +241,8 @@ interface ReturnUser {
     accountStatus: string;
     lastActive: Date;
     lastLogin: Date;
-    logEntries: ObjectId[];
-    activeSessions: ObjectId[];
+    logEntries: any[];
+    activeSessions: any[];
     createdAt: Date;
     updatedAt: Date;
     _id: string | ObjectId;
