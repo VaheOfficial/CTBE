@@ -404,6 +404,7 @@ export class UserController {
         email: user.email,
         role: user.role,
         clearanceLevel: user.clearanceLevel,
+        temperaturePreference: user.temperaturePreference,
         accountStatus: user.accountStatus,
         lastActive: user.lastActive,
         lastLogin: user.lastLogin,
@@ -491,11 +492,12 @@ export class UserController {
 }
 
 
-interface ReturnUser {
+export interface ReturnUser {
     name: string;
     email: string;
     role: string;
     clearanceLevel: string;
+    temperaturePreference: string;
     accountStatus: string;
     lastActive: Date;
     lastLogin: Date;

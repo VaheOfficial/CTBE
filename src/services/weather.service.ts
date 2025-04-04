@@ -2,10 +2,14 @@ import fs from "fs";
 import path from "path";
 import { logger } from "../utils/logger";
 import { CacheController } from "../controllers/cache.controller";
+import User from "../models/user.model";
+import type { RequestWithUser } from "express";
+import type { ReturnUser } from "../controllers/user.controller";
 
 const cacheKey = 'weather-forecast';
 
 export async function getWeatherForecast() {
+
     const cachedForecast = await CacheController.getCache(cacheKey);
     if(cachedForecast) {
         return JSON.parse(cachedForecast);
@@ -61,21 +65,16 @@ export async function getWeatherForecast() {
 
     const formattedInterpolatedForecast = formatWeatherForecast(interpolatedForecast);
     
-    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
-    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
-    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
-    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
-    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
-    // ** TODO: Add a bit of deviation to the forecast to make it more realistic
-    
-    
+    // Add random deviations to make the forecast more realistic
+    const realisticForecast = addRealisticDeviation(formattedInterpolatedForecast);
+
     // Calculate the end of the next minute for cache expiration
     const now = new Date();
     const endHour = now.getHours();
     const endMinute = now.getMinutes() + 1; // Next minute
     
-    CacheController.setCacheWithTimeRange(cacheKey, JSON.stringify(formattedInterpolatedForecast), endHour, endMinute);
-    return formattedInterpolatedForecast;
+    CacheController.setCacheWithTimeRange(cacheKey, JSON.stringify(realisticForecast), endHour, endMinute);
+    return realisticForecast;
 }
 
 /**
@@ -122,7 +121,8 @@ function interpolateForecasts(forecast1: any, forecast2: any, weight: number) {
 
 function formatWeatherForecast(forecast: any) {
     const formattedData: weatherForecast = {
-        temperature: forecast.temp_c.toFixed(1),
+        temperatureC: forecast.temp_c.toFixed(1),
+        temperatureF: forecast.temp_f.toFixed(1),
         humidity: forecast.humidity,
         windSpeed: forecast.wind_mph.toFixed(1),
         windDirection: forecast.wind_dir,
@@ -135,8 +135,66 @@ function formatWeatherForecast(forecast: any) {
     return formattedData;
 }
 
+/**
+ * Adds slight random deviations to weather forecast values to make them more realistic
+ * @param forecast The formatted weather forecast
+ * @returns The forecast with realistic deviations applied
+ */
+function addRealisticDeviation(forecast: weatherForecast): weatherForecast {
+    const result = { ...forecast };
+    
+    // Apply small random deviations to numerical properties
+    // Temperature: ±0.3°C
+    result.temperatureC = applyDeviation(parseFloat(forecast.temperatureC.toString()), 0.3);
+    result.temperatureF = applyDeviation(parseFloat(forecast.temperatureF.toString()), 0.3);
+    
+    // Humidity: ±2%
+    result.humidity = applyDeviation(forecast.humidity, 2, true);
+    
+    // Wind Speed: ±0.5 mph
+    result.windSpeed = applyDeviation(parseFloat(forecast.windSpeed.toString()), 0.5);
+    
+    // Pressure: ±0.5 mb
+    result.pressure = applyDeviation(forecast.pressure, 0.5);
+    
+    // Wind Chill: ±0.2°C
+    result.windChill = applyDeviation(parseFloat(forecast.windChill.toString()), 0.2);
+    
+    return result;
+}
+
+/**
+ * Applies a random deviation to a numeric value
+ * @param value The original value
+ * @param maxDeviation The maximum amount of deviation to apply (±)
+ * @param isInteger Whether the result should be an integer
+ * @returns The value with deviation applied
+ */
+function applyDeviation(value: number, maxDeviation: number, isInteger: boolean = false): number {
+    // Generate a random deviation between -maxDeviation and +maxDeviation
+    const deviation = (Math.random() * 2 - 1) * maxDeviation;
+    
+    // Apply the deviation
+    let result = value + deviation;
+    
+    // Round to integer if needed
+    if (isInteger) {
+        result = Math.round(result);
+        
+        // Ensure values stay within logical bounds (e.g., humidity 0-100%)
+        if (result < 0) result = 0;
+        if (result > 100) result = 100;
+    } else {
+        // Round to 1 decimal place for floating point values
+        result = Math.round(result * 10) / 10;
+    }
+    
+    return result;
+}
+
 interface weatherForecast { 
-    temperature: number;
+    temperatureC: number;
+    temperatureF: number;
     humidity: number;
     windSpeed: number;
     windDirection: string;
@@ -145,4 +203,31 @@ interface weatherForecast {
     updatedAt: string;
     altitude: number;
     windChill: number;
+}
+
+export async function updateTemperaturePreference(req: RequestWithUser) {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+        return { message: 'User not found' };
+    }
+    user.temperaturePreference = req.body.preference;
+    const formattedUser: ReturnUser = {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        clearanceLevel: user.clearanceLevel,
+        temperaturePreference: user.temperaturePreference,
+        accountStatus: user.accountStatus,
+        lastActive: user.lastActive,
+        lastLogin: user.lastLogin,
+        logEntries: user.logEntries ? user.logEntries : [],
+        activeSessions: user.activeSessions || [], // Include full active sessions, not just IDs
+        lastPasswordChange: user.lastPasswordChange,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        _id: user._id.toString(),
+      }
+
+    await user.save();
+    return formattedUser;
 }
