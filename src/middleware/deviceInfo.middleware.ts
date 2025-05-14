@@ -173,7 +173,6 @@ export const detectDeviceInfo = (req: Request, res: Response, next: NextFunction
       logger.warn(`Security flags detected: ${securityFlags.join(', ')} from ${ipAddress}`);
     }
     
-    logger.info(`Device info detected: Browser: ${browser}, Device: ${device}, IP: ${ipAddress}`);
     
     // Continue to next middleware
     next();

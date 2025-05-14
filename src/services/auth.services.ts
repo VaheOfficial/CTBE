@@ -76,6 +76,7 @@ export const registerUser = async (userData: User) => {
   // Create new user with hashed password
   const user = await User.create({
     ...userData,
+    temperaturePreference: "c",
     password: hashedPassword
   });
 

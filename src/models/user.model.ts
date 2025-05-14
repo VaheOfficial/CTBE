@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema({
     default: "level1",
     required: true,
   },
+  temperaturePreference: {
+    type: String,
+    enum: ["c", "f"],
+    default: "c",
+  },
   lastActive: {
     type: Date,
     default: Date.now,
@@ -80,6 +85,7 @@ interface User extends Document {
   logEntries: mongoose.Types.ObjectId[];
   activeSessions: mongoose.Types.ObjectId[];
   lastPasswordChange: Date;
+  temperaturePreference: string;
 }
 
 export default User;

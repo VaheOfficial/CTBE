@@ -9,6 +9,8 @@ import { generateActiveSession, getActiveSessions, updateActiveSession, deleteAc
 import type { ActiveSessionType } from "../models/activeSession.model";
 import bcrypt from "bcrypt";
 import Global from "../models/global.model";
+import Mission, { type MissionType } from "../models/mission.model";
+import Commendation, { type CommendationType } from "../models/commendation.model";
 
 // Helper function for security checks
 export class UserController {
@@ -398,17 +400,22 @@ export class UserController {
         return errorResponse(res, "User not found", 404);
       }
       await generateLog(user._id.toString(), "website", "User profile retrieved", "information", "resolved");
+      const missions = await Mission.find({ participants: user._id }) as MissionType[];
+      const commendations = await Commendation.find({ awardee: user._id }) as CommendationType[];
 
       const formattedUser: ReturnUser = {
         name: user.name,
         email: user.email,
         role: user.role,
         clearanceLevel: user.clearanceLevel,
+        temperaturePreference: user.temperaturePreference,
         accountStatus: user.accountStatus,
         lastActive: user.lastActive,
         lastLogin: user.lastLogin,
         logEntries: user.logEntries ? user.logEntries : [],
-        activeSessions: user.activeSessions || [], // Include full active sessions, not just IDs
+        activeSessions: user.activeSessions || [],
+        missions: missions,
+        commendations: commendations,
         lastPasswordChange: user.lastPasswordChange,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
@@ -491,16 +498,19 @@ export class UserController {
 }
 
 
-interface ReturnUser {
+export interface ReturnUser {
     name: string;
     email: string;
     role: string;
     clearanceLevel: string;
+    temperaturePreference: string;
     accountStatus: string;
     lastActive: Date;
     lastLogin: Date;
     logEntries: LogType[];
     activeSessions: ActiveSessionType[];
+    missions: MissionType[];
+    commendations: CommendationType[];
     createdAt: Date;
     updatedAt: Date;
     _id: string | ObjectId;
