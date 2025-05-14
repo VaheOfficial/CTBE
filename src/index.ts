@@ -5,10 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import http from "node:http";
 import { WebSocketServer } from "ws";
-import { streamAudioFileToClient } from "./services/audioStreaming.service";
-import { initVideoStreamingServer, getVideoStreamingServer, stopVideoStreamingServer } from "./services/videoStreaming.service";
 import { globalCleanUp } from "./services/global.service";
-import { kerberosClient, kerberosServer } from "./services/kerberos.service";
 
 // Middleware imports
 import { detectDeviceInfo } from "./middleware/deviceInfo.middleware";
@@ -27,17 +24,6 @@ const WS_PORT = 8081;
 const wsServerHttp = http.createServer();
 const wss = new WebSocketServer({ server: wsServerHttp });
 
-// Initialize Kerberos server
-// kerberosServer();
-
-// Initialize video streaming with default streams
-initVideoStreamingServer();
-console.log(`Video streaming server initialized ${JSON.stringify(getVideoStreamingServer())}`);
-
-// Start streaming the audio file to every WebSocket client.
-streamAudioFileToClient(wss);
-// streamVideoFileToClient(wss);
-
 // Run globalCleanUp every minute (60000 milliseconds)
 setInterval(globalCleanUp, 60000);
 
@@ -49,7 +35,6 @@ wsServerHttp.listen(WS_PORT, () => {
 // Graceful shutdown handling
 const shutdown = () => {
   console.log('Shutting down server...');
-  stopVideoStreamingServer();
   process.exit(0);
 };
 
