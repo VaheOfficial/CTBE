@@ -13,3 +13,10 @@ bun run index.ts
 ```
 
 This project was created using `bun init` in bun v1.2.6. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+
+
+# Start docker mongodb and redis instances
+
+```bash
+sudo docker-compose up -d
+```

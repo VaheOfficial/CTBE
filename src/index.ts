@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import http from "node:http";
 import { WebSocketServer } from "ws";
 import { globalCleanUp } from "./services/global.service";
+import path from "node:path";
 
 // Middleware imports
 import { detectDeviceInfo } from "./middleware/deviceInfo.middleware";
@@ -16,6 +17,10 @@ import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
 import globalRoutes from "./routes/global.route";
 import weatherRoutes from "./routes/weather.route";
+import videoRoutes from "./routes/video.route";
+import audioRoutes from "./routes/audio.route";
+import adminRoutes from "./routes/admin.route";
+
 // Connect to the database.
 connectDB();
 
@@ -57,6 +62,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
+// Serve static files from the public directory
+app.use(express.static(path.join(process.cwd(), 'public')));
+
 // Apply device detection middleware.
 app.use(detectDeviceInfo);
 
@@ -66,6 +74,9 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/global", globalRoutes);
 app.use("/weather", weatherRoutes);
+app.use("/video", videoRoutes);
+app.use("/audio", audioRoutes);
+app.use("/admin", adminRoutes);
 
 // Catch-all route.
 app.use((req, res) => {

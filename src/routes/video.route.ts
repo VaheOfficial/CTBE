@@ -1,14 +1,21 @@
-import { Router } from "express";
+import express from "express";
+import { getVideoSources, getPreviews, streamVideo } from "../controllers/video.controller";
 
-const router = Router();
+const router = express.Router();
 
+// Get all available video sources
 router.get("/", (req, res) => {
-    res.send("Hello World");
+    getVideoSources(req, res);
 });
 
-router.post("/:streamName", (req, res) => {
-    const { streamName } = req.params;
-    res.send(`Hello ${streamName}`);
+// Get preview images for all video sources
+router.get('/previews', (req, res) => {
+    getPreviews(req, res);
+});
+
+// Stream specific video by name
+router.get('/stream/:streamName', (req, res) => {
+    streamVideo(req, res);
 });
 
 export default router;

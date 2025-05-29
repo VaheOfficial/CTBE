@@ -1,0 +1,1069 @@
+{
+  "info": {
+    "name": "CTBE API Collection",
+    "description": "Complete API collection for CTBE application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Test Routes",
+      "item": [
+        {
+          "name": "Test Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test",
+              "host": ["{{baseUrl}}"],
+              "path": ["test"]
+            },
+            "description": "Test endpoint to verify API is working"
+          }
+        },
+        {
+          "name": "Test Error Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test/error",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "error"]
+            },
+            "description": "Test error endpoint"
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "health"]
+            },
+            "description": "Health check endpoint"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user"
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login a user"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh-token"]
+            },
+            "description": "Refresh access token using refresh token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Logout user (protected route)"
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Get current user's profile (protected route)"
+          }
+        },
+        {
+          "name": "Delete Session",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/delete-session",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "delete-session"]
+            },
+            "description": "Delete current session (protected route)"
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"oldpassword123\",\n  \"newPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
+            },
+            "description": "Change user password (protected route)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Get current user's profile"
+          }
+        },
+        {
+          "name": "Delete Session",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/sessions/:sessionId",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "sessions", ":sessionId"],
+              "variable": [
+                {
+                  "key": "sessionId",
+                  "value": "session_id_here"
+                }
+              ]
+            },
+            "description": "Delete a specific session"
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "all"]
+            },
+            "description": "Get all users (admin route)"
+          }
+        },
+        {
+          "name": "Reset Password As Admin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/admin/reset-password/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "admin", "reset-password", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "user_id_here"
+                }
+              ]
+            },
+            "description": "Reset user password as admin"
+          }
+        },
+        {
+          "name": "Update User As Admin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\",\n  \"email\": \"updated@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/admin/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "admin", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "user_id_here"
+                }
+              ]
+            },
+            "description": "Update user as admin"
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "user_id_here"
+                }
+              ]
+            },
+            "description": "Get user by ID"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "user_id_here"
+                }
+              ]
+            },
+            "description": "Update user information"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Global Management",
+      "item": [
+        {
+          "name": "Create Global",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Global Event\",\n  \"description\": \"Description here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global",
+              "host": ["{{baseUrl}}"],
+              "path": ["global"]
+            },
+            "description": "Create a new global entry"
+          }
+        },
+        {
+          "name": "Get Global",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/global",
+              "host": ["{{baseUrl}}"],
+              "path": ["global"]
+            },
+            "description": "Get global information"
+          }
+        },
+        {
+          "name": "Get Launches",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/global/launch",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "launch"]
+            },
+            "description": "Get all launches"
+          }
+        },
+        {
+          "name": "Create Launch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Launch Title\",\n  \"description\": \"Launch description\",\n  \"date\": \"2024-01-01T00:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global/launch",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "launch"]
+            },
+            "description": "Create a new launch"
+          }
+        },
+        {
+          "name": "Update Launch Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global/launch/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "launch", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "launch_id_here"
+                }
+              ]
+            },
+            "description": "Update launch status"
+          }
+        },
+        {
+          "name": "Revoke Launch",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/global/launch/revoke/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "launch", "revoke", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "launch_id_here"
+                }
+              ]
+            },
+            "description": "Revoke a launch"
+          }
+        },
+        {
+          "name": "Get Missions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/global/mission",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "mission"]
+            },
+            "description": "Get all missions"
+          }
+        },
+        {
+          "name": "Create Mission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mission Title\",\n  \"description\": \"Mission description\",\n  \"objectives\": [\"Objective 1\", \"Objective 2\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global/mission",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "mission"]
+            },
+            "description": "Create a new mission"
+          }
+        },
+        {
+          "name": "Update Mission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Mission Title\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global/mission/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "mission", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "mission_id_here"
+                }
+              ]
+            },
+            "description": "Update mission information"
+          }
+        },
+        {
+          "name": "Add Participants to Mission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participants\": [\"user_id_1\", \"user_id_2\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global/mission/add-participants/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "mission", "add-participants", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "mission_id_here"
+                }
+              ]
+            },
+            "description": "Add participants to mission"
+          }
+        },
+        {
+          "name": "Add Commendations to Mission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commendations\": [\"commendation_id_1\", \"commendation_id_2\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global/mission/add-commendations/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "mission", "add-commendations", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "mission_id_here"
+                }
+              ]
+            },
+            "description": "Add commendations to mission"
+          }
+        },
+        {
+          "name": "Add Launch to Mission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"launchId\": \"launch_id_here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global/mission/add-launch/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "mission", "add-launch", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "mission_id_here"
+                }
+              ]
+            },
+            "description": "Add launch to mission"
+          }
+        },
+        {
+          "name": "Get Commendations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/global/commendation",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "commendation"]
+            },
+            "description": "Get all commendations"
+          }
+        },
+        {
+          "name": "Create Commendation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Commendation Title\",\n  \"description\": \"Commendation description\",\n  \"recipient\": \"user_id_here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global/commendation",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "commendation"]
+            },
+            "description": "Create a new commendation"
+          }
+        },
+        {
+          "name": "Update Commendation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Commendation Title\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/global/commendation/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "commendation", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "commendation_id_here"
+                }
+              ]
+            },
+            "description": "Update commendation information"
+          }
+        },
+        {
+          "name": "Revoke Commendation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/global/commendation/revoke/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["global", "commendation", "revoke", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "commendation_id_here"
+                }
+              ]
+            },
+            "description": "Revoke a commendation"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Weather",
+      "item": [
+        {
+          "name": "Get Weather Forecast",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/weather",
+              "host": ["{{baseUrl}}"],
+              "path": ["weather"]
+            },
+            "description": "Get weather forecast"
+          }
+        },
+        {
+          "name": "Update Temperature Preference",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preference\": \"celsius\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/weather/temperature-preference",
+              "host": ["{{baseUrl}}"],
+              "path": ["weather", "temperature-preference"]
+            },
+            "description": "Update temperature preference (celsius/fahrenheit)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Video",
+      "item": [
+        {
+          "name": "Get Video Sources",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/video",
+              "host": ["{{baseUrl}}"],
+              "path": ["video"]
+            },
+            "description": "Get all available video sources"
+          }
+        },
+        {
+          "name": "Get Video Previews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/video/previews",
+              "host": ["{{baseUrl}}"],
+              "path": ["video", "previews"]
+            },
+            "description": "Get preview images for all video sources"
+          }
+        },
+        {
+          "name": "Stream Video",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/video/stream/:streamName",
+              "host": ["{{baseUrl}}"],
+              "path": ["video", "stream", ":streamName"],
+              "variable": [
+                {
+                  "key": "streamName",
+                  "value": "video_stream_name_here"
+                }
+              ]
+            },
+            "description": "Stream specific video by name"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audio",
+      "item": [
+        {
+          "name": "Get Audio Sources",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/audio",
+              "host": ["{{baseUrl}}"],
+              "path": ["audio"]
+            },
+            "description": "Get all available audio sources"
+          }
+        },
+        {
+          "name": "Play Audio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/audio/play",
+              "host": ["{{baseUrl}}"],
+              "path": ["audio", "play"]
+            },
+            "description": "Play audio"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin"]
+            },
+            "description": "Get admin dashboard overview"
+          }
+        },
+        {
+          "name": "System Diagnostic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"ping\",\n  \"target\": \"google.com\",\n  \"options\": \"-c 4\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/diagnostic",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "diagnostic"]
+            },
+            "description": "Network diagnostic tools (ping, traceroute, nslookup, dig, netstat, telnet)"
+          }
+        },
+        {
+          "name": "System Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/system-info?category=system",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "system-info"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "system",
+                  "description": "system | hardware | network | storage | processes | services"
+                }
+              ]
+            },
+            "description": "Get system information by category"
+          }
+        },
+        {
+          "name": "Server Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "health"]
+            },
+            "description": "Server health check"
+          }
+        },
+        {
+          "name": "Network Tools",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/network?tool=portscan&host=localhost&port=80",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "network"],
+              "query": [
+                {
+                  "key": "tool",
+                  "value": "portscan",
+                  "description": "portscan | connectivity | dns | trace"
+                },
+                {
+                  "key": "host",
+                  "value": "localhost",
+                  "description": "Target hostname or IP"
+                },
+                {
+                  "key": "port",
+                  "value": "80",
+                  "description": "Port number (for portscan)"
+                }
+              ]
+            },
+            "description": "Network diagnostic utilities"
+          }
+        },
+        {
+          "name": "API Documentation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/docs",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "docs"]
+            },
+            "description": "Get API documentation"
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  }
+} 

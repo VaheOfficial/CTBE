@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7.2-alpine          # latest stable Alpine build
+    container_name: redis
+    restart: unless-stopped          # auto-restart, but let you `docker stop` it
+    command: ["redis-server"]  # enable AOF persistence
+    volumes:
+      - redis-data:/data             # Redis stores snapshots & AOF here
+    ports:
+      - "6379:6379"                  # remove if you don’t need host-level access
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:7.0-jammy           # current LTS MongoDB (Ubuntu 22.04 base)
+    container_name: mongodb
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis-data:   # named volumes live under /var/lib/docker/volumes/
+  mongo-data:
